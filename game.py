@@ -3,8 +3,8 @@ from connectFour import ConnectFour
 
 class Game:
     def __init__(self, player1, player2):
-        self.player1 = player1
-        self.player2 = player2
+        self.player1 = str(player1)[0]
+        self.player2 = str(player2)[0]
 
         self.turns = 2
 
@@ -26,7 +26,7 @@ class Game:
             if count > 0:  # Print invalid message
                 print("Your answer was not valid.")
 
-            userInput = input("\n" + msg)  # Grab new user input
+            userInput = input(msg)  # Grab new user input
 
             if not caseSensitive:  # Make lowercase if needed
                 userInput = userInput.lower()
@@ -36,6 +36,8 @@ class Game:
                 return ans
 
     def displayGame(self):
+        print("\x1b[2J\x1b[H")
+
         for row in self.connectFour.board:
             for i in range(3):
                 print("|   ", end="")
@@ -58,6 +60,7 @@ class Game:
             for row in range(len(self.connectFour.board) - 1, 0, -1):
                 if self.connectFour.board[row][column].winner == 0:
                     cellGame = self.connectFour.board[row][column]
+
                     break
 
             cellRow = int(
@@ -91,8 +94,8 @@ class Game:
 
 
 e = Game(
-    1,
-    2,
+    "D",
+    "F",
 )
 
 e.displayGame()

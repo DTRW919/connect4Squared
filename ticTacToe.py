@@ -2,17 +2,17 @@ class TicTacToe:
     def __init__(self, player1, player2, id=-1):
         self.id = id
 
-        self.player1 = 1
-        self.player2 = 2
+        self.player1 = player1
+        self.player2 = player2
 
         self.board = []
-        self.empty = "0"
+        self.empty = "•"
 
         self.winner = 0
         # TEST
         # winners = [38]
         # if self.id in winners:
-        #     self.winner = -1
+        #     self.winner = self.player1
         # else:
         #     self.winner = 0
 
@@ -22,20 +22,24 @@ class TicTacToe:
             for j in range(3):  # Columns
                 self.board[i].append(self.empty)
 
-    def __str__(self):
-        returnString = ""
-
-        for row in self.board:
-            returnString += " | ".join(self.board[0])
-            returnString += "    "
-
-        return returnString
-
     def getRow(self, row):
         if self.winner <= 0:
-            return self.board[row]
+            # return self.board[row]
+            returnRow = self.board[row]
+
+            for space in range(len(returnRow)):
+                if returnRow[space] == self.player1:
+                    returnRow[space] = "\x1b[1;33m" + str(self.player1) + "\x1b[1;0m"
+                elif returnRow[space] == self.player2:
+                    returnRow[space] = "\x1b[1;31m" + str(self.player2) + "\x1b[1;0m"
+
+            return returnRow
+
         elif row == 1:  # Center row
-            return [" ", self.winner, " "]
+            if self.winner == self.player1:
+                return [" ", "\x1b[1;33m" + str(self.player1) + "\x1b[1;0m", " "]
+            else:
+                return [" ", "\x1b[1;31m" + str(self.player2) + "\x1b[1;0m", " "]
         else:
             return [" ", " ", " "]
 
