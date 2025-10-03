@@ -41,12 +41,17 @@ class ConnectFour:
 
         return validCells
 
-    def getAllColumns(self):  # Get all columns that are playable
+    def getAllColumns(self, exclude=[]):  # Get all columns that are playable
         validColumns = []
 
         for column in range(len(self.board[0])):
             if self.getColumnValidity(column) > 0:
                 validColumns.append(str(column))
+
+        if len(exclude) > 0:
+            for val in exclude:
+                if str(val) in validColumns:
+                    validColumns.remove(str(val))
 
         return validColumns
 
