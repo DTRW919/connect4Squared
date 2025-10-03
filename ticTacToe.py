@@ -10,12 +10,9 @@ class TicTacToe:
 
         self.winner = 0
         # TEST
-        # winners = [1, 8, 15, 22, 29, 36]
+        # winners = [38]
         # if self.id in winners:
-        #     if self.id % 2 == 0:
-        #         self.winner = self.player1
-        #     else:
-        #         self.winner = self.player2
+        #     self.winner = -1
         # else:
         #     self.winner = 0
 
@@ -35,7 +32,7 @@ class TicTacToe:
         return returnString
 
     def getRow(self, row):
-        if self.winner == 0:
+        if self.winner <= 0:
             return self.board[row]
         elif row == 1:  # Center row
             return [" ", self.winner, " "]
@@ -73,6 +70,15 @@ class TicTacToe:
 
         if self.checkWinner(player):
             self.winner = player
+        else:
+            self.checkTie()
+
+    def checkTie(self):
+        for row in self.board:
+            if self.empty in row:
+                return
+
+        self.winner = -1
 
     def checkWinner(self, player):
         # Rows
