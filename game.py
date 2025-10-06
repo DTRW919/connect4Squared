@@ -42,9 +42,13 @@ class Game:
         for row in range(len(self.connectFour.board)):
             print(" " * 7, end="")
 
+            lowestRow = self.connectFour.getLowestCell(
+                boardCol
+            )  # Get lowest row for reference
+
             for i in range(7):
                 for j in range(3):
-                    if i == cellCol and step == "cellCol":
+                    if i == cellCol and row == lowestRow and step == "cellCol":
                         if str(j) in self.connectFour.board[row][i].getValidCols(
                             cellRow
                         ):
@@ -58,8 +62,6 @@ class Game:
                 print("     ", end="")
 
             print()
-
-            lowestRow = self.connectFour.getLowestCell(boardCol)
 
             for i in range(3):
                 if lowestRow == row and step == "cellRow":
@@ -167,7 +169,7 @@ class Game:
 
         column = cellGame.id % 7  # Number column
 
-        self.displayGame(boardCol=column - 1, cellRow=1, step="cellRow")
+        self.displayGame(boardCol=column - 1, step="cellRow")
 
         cellRow = chooseRow(self, cellGame)
 
