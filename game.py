@@ -7,7 +7,7 @@ class Game:
         self.player1 = player1
         self.player2 = player2
 
-        self.moves = 1  # Number of moves each player gets
+        self.moves = 2  # Number of moves each player gets
 
         self.winner = 0
 
@@ -47,38 +47,92 @@ class Game:
                 print()
             print()
 
-    def playTurn(self, player):
-        columnsPlayed = []
+    def playTurn(self, player, cellPreset=None):  # Extra parameters for quick starts
+        columnsPlayed = []  # Disallow same column multiple times in the same turn
 
-        column = int(
-            self.validateResponse(
-                self.connectFour.getAllColumns(columnsPlayed),
-                f"Choose a column player {player.getColoredName()}: ",
+        def chooseColumn(self):
+            cellGame = None
+
+            column = int(
+                self.validateResponse(
+                    self.connectFour.getAllColumns(columnsPlayed),
+                    f"Choose a board column {player.getColoredName()}: ",
+                )
             )
-        )
 
-        for row in range(len(self.connectFour.board) - 1, 0, -1):
-            if self.connectFour.board[row][column].winner == 0:
-                cellGame = self.connectFour.board[row][column]
+            for row in range(len(self.connectFour.board) - 1, 0, -1):
+                if self.connectFour.board[row][column].winner == 0:
+                    cellGame = self.connectFour.board[row][column]
 
-                break
+                    return cellGame
 
-        cellRow = int(
-            self.validateResponse(cellGame.getValidRows(), "Choose a cell row: ")
-        )
+                    break
 
-        cellCol = int(
-            self.validateResponse(
-                cellGame.getValidCols(cellRow), "Choose a cell column: "
-            )
-        )
+        def chooseRow(self, cellGame):
+            cellRow = None
+
+            validAnswers = cellGame.getValidRows()
+
+            validAnswers.append("back")
+
+            userInput = self.validateResponse(validAnswers, "Choose a cell row: ")
+
+            if userInput != "back":
+                cellRow = int(userInput)
+
+            else:
+                return None
+
+                newCellGame = chooseColumn(self)
+                print("recursive newcell is", newCellGame)
+
+                cellRow = chooseRow(self, newCellGame)
+
+            return cellRow
+
+        def chooseCol(self, cellGame, row):
+            cellCol = None
+
+            validAnswers = cellGame.getValidCols(row)
+
+            validAnswers.append("back")
+
+            userInput = self.validateResponse(validAnswers, "Choose a cell column: ")
+
+            if userInput != "back":
+                cellCol = int(userInput)
+
+            else:
+                return None
+                newCellRow = chooseRow(self)
+
+                cellCol = chooseCol(self, cellGame, newCellRow)
+
+            return cellCol
+
+        if cellPreset is None:
+            cellGame = chooseColumn(self)
+        else:
+            cellGame = cellPreset
+
+        cellRow = chooseRow(self, cellGame)
+
+        if cellRow is None:
+            self.playTurn(player)
+            return
+
+        cellCol = chooseCol(self, cellGame, cellRow)
+
+        if cellCol is None:
+            self.playTurn(player, cellPreset=cellGame)
+            return
 
         cellGame.setCell(cellRow, cellCol, player)
 
         self.connectFour.checkWinner(player)
         self.displayGame()
 
-        columnsPlayed.append(column)
+        columnsPlayed.append(cellGame.id % 7)
 
     def playGame(self):
         self.connectFour.checkWinner(self.player1)
