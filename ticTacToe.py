@@ -23,23 +23,22 @@ class TicTacToe:
                 self.board[i].append(self.empty)
 
     def getRow(self, row):
-        if self.winner <= 0:
-            # return self.board[row]
-            returnRow = self.board[row]
+        if self.winner == 0 or self.winner == -1:
+            returnRow = list(self.board[row])
 
             for space in range(len(returnRow)):
                 if returnRow[space] == self.player1:
-                    returnRow[space] = "\x1b[1;33m" + str(self.player1) + "\x1b[1;0m"
+                    returnRow[space] = self.player1.getColoredName(1)
                 elif returnRow[space] == self.player2:
-                    returnRow[space] = "\x1b[1;31m" + str(self.player2) + "\x1b[1;0m"
+                    returnRow[space] = self.player2.getColoredName(1)
 
             return returnRow
 
         elif row == 1:  # Center row
             if self.winner == self.player1:
-                return [" ", "\x1b[1;33m" + str(self.player1) + "\x1b[1;0m", " "]
+                return [" ", self.player1.getColoredName(1) + "\x1b[1;0m", " "]
             else:
-                return [" ", "\x1b[1;31m" + str(self.player2) + "\x1b[1;0m", " "]
+                return [" ", self.player1.getColoredName(2) + "\x1b[1;0m", " "]
         else:
             return [" ", " ", " "]
 

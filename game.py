@@ -1,10 +1,11 @@
 from connectFour import ConnectFour
+from player import Player
 
 
 class Game:
     def __init__(self, player1, player2):
-        self.player1 = str(player1)[0]
-        self.player2 = str(player2)[0]
+        self.player1 = player1
+        self.player2 = player2
 
         self.turns = 2
 
@@ -53,7 +54,7 @@ class Game:
             column = int(
                 self.validateResponse(
                     self.connectFour.getAllColumns(columnsPlayed),
-                    f"Choose a column player {player}: ",
+                    f"Choose a column player {player.getColoredName()}: ",
                 )
             )
 
@@ -93,9 +94,12 @@ class Game:
         print(f"Player {self.connectFour.winner} won!")
 
 
+player1 = Player(1, "Kaden", "\x1b[1;33m")
+player2 = Player(2, "Nedak", "\x1b[1;31m")
+
 e = Game(
-    "D",
-    "F",
+    player1,
+    player2,
 )
 
 e.displayGame()
