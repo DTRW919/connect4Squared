@@ -55,6 +55,13 @@ class ConnectFour:
 
         return validColumns
 
+    def getLowestCell(self, column):
+        for row in range(len(self.board) - 1, -1, -1):  # Stop at 0
+            if self.board[row][column].winner == 0:
+                cellGame = row
+
+                return cellGame
+
     def checkWinner(self, player):
         # Column
         for row in range(len(self.board) - 4):

@@ -42,7 +42,7 @@ class TicTacToe:
         else:
             return [" ", " ", " "]
 
-    def getValidRows(self):
+    def getValidRows(self):  # Get all valid rows
         validRows = []
 
         for row in range(len(self.board)):
@@ -51,7 +51,7 @@ class TicTacToe:
 
         return validRows
 
-    def getValidCols(self, row):
+    def getValidCols(self, row):  # Get valid columns in a row
         validColumns = []
 
         for column in range(len(self.board)):

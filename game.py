@@ -36,16 +36,62 @@ class Game:
             if ans.lower() == userInput.lower():
                 return ans
 
-    def displayGame(self):
-        print("\x1b[2J\x1b[H")
+    def displayGame(self, boardCol=-1, cellRow=-1, cellCol=-1, step=""):
+        print("\x1b[2J\x1b[H")  # Clear console
 
-        for row in self.connectFour.board:
+        for row in range(len(self.connectFour.board)):
+            print(" " * 7, end="")
+
+            for i in range(7):
+                for j in range(3):
+                    if i == cellCol and step == "cellCol":
+                        if str(j) in self.connectFour.board[row][i].getValidCols(
+                            cellRow
+                        ):
+                            print("\x1b[1;1m", end="")
+                        else:
+                            print("\x1b[0;2m", end="")
+                    else:
+                        print("\x1b[0;2m", end="")
+
+                    print(j, end="\x1b[0;0m  ")
+                print("     ", end="")
+
+            print()
+
+            lowestRow = self.connectFour.getLowestCell(boardCol)
+
             for i in range(3):
-                print("|   ", end="")
-                for col in row:
+                if lowestRow == row and step == "cellRow":
+                    if str(i) in self.connectFour.board[row][boardCol].getValidRows():
+                        print("\x1b[1;1m", end="")
+                    else:
+                        print("\x1b[0;2m", end="")
+                else:
+                    print("\x1b[0;2m", end="")
+
+                print(" " + str(i), end="\x1b[0;0m ")
+
+                print("|   ", end="")  # Cell seperator
+
+                for col in self.connectFour.board[row]:
                     print(*col.getRow(i), sep="  ", end="   |   ")
                 print()
-            print()
+
+        print(" " * 10, end="")
+
+        for i in range(7):
+            if step == "boardCol":
+                if self.connectFour.getColumnValidity(i):
+                    print("\x1b[1;1m", end="")
+                else:
+                    print("\x1b[0;2m", end="")
+            else:
+                print("\x1b[0;2m", end="")
+
+            print(str(i) + "\x1b[0;0m", end=" " * 13)
+
+        print("\n")  # Empty line between board prompt
 
     def playTurn(self, player, cellPreset=None):  # Extra parameters for quick starts
         columnsPlayed = []  # Disallow same column multiple times in the same turn
@@ -56,17 +102,15 @@ class Game:
             column = int(
                 self.validateResponse(
                     self.connectFour.getAllColumns(columnsPlayed),
-                    f"Choose a board column {player.getColoredName()}: ",
+                    f"{player.getColoredName()} - Choose a board column: ",
                 )
             )
 
-            for row in range(len(self.connectFour.board) - 1, 0, -1):
-                if self.connectFour.board[row][column].winner == 0:
-                    cellGame = self.connectFour.board[row][column]
+            cellGame = self.connectFour.board[self.connectFour.getLowestCell(column)][
+                column
+            ]
 
-                    return cellGame
-
-                    break
+            return cellGame
 
         def chooseRow(self, cellGame):
             cellRow = None
@@ -75,7 +119,9 @@ class Game:
 
             validAnswers.append("back")
 
-            userInput = self.validateResponse(validAnswers, "Choose a cell row: ")
+            userInput = self.validateResponse(
+                validAnswers, f"{player.getColoredName()} - Choose a cell row: "
+            )
 
             if userInput != "back":
                 cellRow = int(userInput)
@@ -97,7 +143,9 @@ class Game:
 
             validAnswers.append("back")
 
-            userInput = self.validateResponse(validAnswers, "Choose a cell column: ")
+            userInput = self.validateResponse(
+                validAnswers, f"{player.getColoredName()} - Choose a cell column: "
+            )
 
             if userInput != "back":
                 cellCol = int(userInput)
@@ -110,16 +158,26 @@ class Game:
 
             return cellCol
 
+        self.displayGame(step="boardCol")
+
         if cellPreset is None:
             cellGame = chooseColumn(self)
         else:
             cellGame = cellPreset
+
+        column = cellGame.id % 7  # Number column
+
+        self.displayGame(boardCol=column - 1, cellRow=1, step="cellRow")
 
         cellRow = chooseRow(self, cellGame)
 
         if cellRow is None:
             self.playTurn(player)
             return
+
+        self.displayGame(
+            cellCol=column - 1, cellRow=int(cellRow), step="cellCol"
+        )  # Index, not number
 
         cellCol = chooseCol(self, cellGame, cellRow)
 
@@ -132,7 +190,7 @@ class Game:
         self.connectFour.checkWinner(player)
         self.displayGame()
 
-        columnsPlayed.append(cellGame.id % 7)
+        columnsPlayed.append(column)
 
     def playGame(self):
         self.connectFour.checkWinner(self.player1)
