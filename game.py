@@ -96,9 +96,7 @@ class Game:
         print("\n")  # Empty line between board prompt
 
     def playTurn(self, player, cellPreset=None):  # Extra parameters for quick starts
-        columnsPlayed = []  # Disallow same column multiple times in the same turn
-
-        def chooseColumn(self):
+        def chooseColumn(self, columnsPlayed):
             cellGame = None
 
             column = int(
@@ -131,11 +129,6 @@ class Game:
             else:
                 return None
 
-                newCellGame = chooseColumn(self)
-                print("recursive newcell is", newCellGame)
-
-                cellRow = chooseRow(self, newCellGame)
-
             return cellRow
 
         def chooseCol(self, cellGame, row):
@@ -154,58 +147,61 @@ class Game:
 
             else:
                 return None
-                newCellRow = chooseRow(self)
-
-                cellCol = chooseCol(self, cellGame, newCellRow)
 
             return cellCol
 
-        self.displayGame(step="boardCol")
+        columnsPlayed = []  # Disallow same column multiple times in the same turn
 
-        if cellPreset is None:
-            cellGame = chooseColumn(self)
-        else:
-            cellGame = cellPreset
+        for i in range(self.moves):
+            if self.connectFour.winner != 0:
+                return
 
-        column = cellGame.id % 7  # Number column
+            self.displayGame(step="boardCol")
 
-        self.displayGame(boardCol=column - 1, step="cellRow")
+            if cellPreset is None:
+                cellGame = chooseColumn(self, columnsPlayed)
+            else:
+                cellGame = cellPreset
 
-        cellRow = chooseRow(self, cellGame)
+            column = cellGame.id % 7 - 1  # Number column
 
-        if cellRow is None:
-            self.playTurn(player)
-            return
+            self.displayGame(boardCol=column - 1, step="cellRow")
 
-        self.displayGame(
-            cellCol=column - 1, cellRow=int(cellRow), step="cellCol"
-        )  # Index, not number
+            cellRow = chooseRow(self, cellGame)
 
-        cellCol = chooseCol(self, cellGame, cellRow)
+            if cellRow is None:
+                self.playTurn(player)
+                return
 
-        if cellCol is None:
-            self.playTurn(player, cellPreset=cellGame)
-            return
+            self.displayGame(
+                cellCol=column, cellRow=int(cellRow), step="cellCol"
+            )  # Index, not number
 
-        cellGame.setCell(cellRow, cellCol, player)
+            cellCol = chooseCol(self, cellGame, cellRow)
 
-        self.connectFour.checkWinner(player)
-        self.displayGame()
+            if cellCol is None:
+                self.playTurn(player, cellPreset=cellGame)
+                return
 
-        columnsPlayed.append(column)
+            cellGame.setCell(cellRow, cellCol, player)
+
+            self.connectFour.checkWinner(player)
+            self.displayGame()
+
+            columnsPlayed.append(column)
 
     def playGame(self):
         self.connectFour.checkWinner(self.player1)
         self.connectFour.checkWinner(self.player2)
 
         while self.connectFour.winner == 0:
-            for i in range(self.moves):
-                if self.connectFour.winner == 0:
-                    self.playTurn(self.player1)
+            # for i in range(self.moves):
+            #     if self.connectFour.winner == 0:
+            self.playTurn(self.player1)
 
-            for i in range(self.moves):
-                if self.connectFour.winner == 0:
-                    self.playTurn(self.player2)
+            # for i in range(self.moves):
+            #     if self.connectFour.winner == 0:
+            self.playTurn(self.player2)
 
         print(f"Player {self.connectFour.winner.getColoredName()} won!")
 
