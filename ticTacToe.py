@@ -34,11 +34,11 @@ class TicTacToe:
 
             return returnRow
 
-        elif row == 1:  # Center row
+        elif row == 1:  # Center row because someone won
             if self.winner == self.player1:
                 return [" ", self.player1.getColoredName(1) + "\x1b[1;0m", " "]
             else:
-                return [" ", self.player1.getColoredName(2) + "\x1b[1;0m", " "]
+                return [" ", self.player2.getColoredName(1) + "\x1b[1;0m", " "]
         else:
             return [" ", " ", " "]
 

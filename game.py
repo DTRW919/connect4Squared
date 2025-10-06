@@ -7,7 +7,7 @@ class Game:
         self.player1 = player1
         self.player2 = player2
 
-        self.turns = 2
+        self.moves = 1  # Number of moves each player gets
 
         self.winner = 0
 
@@ -50,48 +50,50 @@ class Game:
     def playTurn(self, player):
         columnsPlayed = []
 
-        for i in range(self.turns):
-            column = int(
-                self.validateResponse(
-                    self.connectFour.getAllColumns(columnsPlayed),
-                    f"Choose a column player {player.getColoredName()}: ",
-                )
+        column = int(
+            self.validateResponse(
+                self.connectFour.getAllColumns(columnsPlayed),
+                f"Choose a column player {player.getColoredName()}: ",
             )
+        )
 
-            for row in range(len(self.connectFour.board) - 1, 0, -1):
-                if self.connectFour.board[row][column].winner == 0:
-                    cellGame = self.connectFour.board[row][column]
+        for row in range(len(self.connectFour.board) - 1, 0, -1):
+            if self.connectFour.board[row][column].winner == 0:
+                cellGame = self.connectFour.board[row][column]
 
-                    break
+                break
 
-            cellRow = int(
-                self.validateResponse(cellGame.getValidRows(), "Choose a cell row: ")
+        cellRow = int(
+            self.validateResponse(cellGame.getValidRows(), "Choose a cell row: ")
+        )
+
+        cellCol = int(
+            self.validateResponse(
+                cellGame.getValidCols(cellRow), "Choose a cell column: "
             )
+        )
 
-            cellCol = int(
-                self.validateResponse(
-                    cellGame.getValidCols(cellRow), "Choose a cell column: "
-                )
-            )
+        cellGame.setCell(cellRow, cellCol, player)
 
-            cellGame.setCell(cellRow, cellCol, player)
+        self.connectFour.checkWinner(player)
+        self.displayGame()
 
-            self.connectFour.checkWinner(player)
-            self.displayGame()
-
-            columnsPlayed.append(column)
+        columnsPlayed.append(column)
 
     def playGame(self):
         self.connectFour.checkWinner(self.player1)
         self.connectFour.checkWinner(self.player2)
 
         while self.connectFour.winner == 0:
-            self.playTurn(self.player1)
+            for i in range(self.moves):
+                if self.connectFour.winner == 0:
+                    self.playTurn(self.player1)
 
-            if self.connectFour.winner == 0:
-                self.playTurn(self.player2)
+            for i in range(self.moves):
+                if self.connectFour.winner == 0:
+                    self.playTurn(self.player2)
 
-        print(f"Player {self.connectFour.winner} won!")
+        print(f"Player {self.connectFour.winner.getColoredName()} won!")
 
 
 player1 = Player(1, "Kaden", "\x1b[1;33m")
